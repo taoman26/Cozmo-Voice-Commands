@@ -62,3 +62,7 @@ If you want to just run the App **without installing the package**, you need to 
 
 **If you want the code, get it here:**
 https://github.com/rizal72/Cozmo-Voice-Commands
+
+### 日本語対応
+raizal72氏のプログラムではスペースで区切られた単語を元にコマンド認識しているが、日本語にはスペースがないため、janomeで形態素解析してコマンドを認識するようにした。
+ウェイクワードは「コズモ」もしくは「ロボット」となります。
