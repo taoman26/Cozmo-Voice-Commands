@@ -12,6 +12,7 @@ import asyncio
 import operator
 import glob
 import json
+from janome.tokenizer import Tokenizer # for japanese
 
 import cozmo
 
@@ -32,7 +33,7 @@ log = False
 wait_for_shift = True
 lang = None
 lang_data = None
-commands_activate = ["cozmo", "robot", "cosmo", "cosimo", "cosma", "cosima", "kosmos", "cosmos", "cosmic", "osmo", "kosovo", "peau", "kosmo", "kozmo", "gizmo"]
+commands_activate = ["cozmo", "robot", "cosmo", "cosimo", "cosma", "cosima", "kosmos", "cosmos", "cosmic", "osmo", "kosovo", "peau", "kosmo", "kozmo", "gizmo", "コズモ", "ロボット"]
 vc = None
 languages = []
 
@@ -217,7 +218,12 @@ def listen(robot: cozmo.robot.Robot):
             print("You said: " + recognized)
 
             '''Check if one of the activation commands is in the recognized string'''
-            found_command = set(commands_activate).intersection(recognized.split())
+            if lang_data['lang'] == 'ja':  # for japanese
+                t = Tokenizer(wakati=True)
+                tokens = t.tokenize(recognized)
+                found_command = set(commands_activate).intersection(tokens)
+            else: # other languages
+                found_command = set(commands_activate).intersection(recognized.split())
             if found_command:
                 cprint("Action command recognized: " + str(found_command), "green")
                 cmd_funcs, cmd_args = extract_commands_from_string(recognized) #check if a corresponding command exists
@@ -314,24 +320,39 @@ def get_command(command_name): #iterates json and returns the command and its in
     for i,command in enumerate(commands):
         #cycle through all the words in the commands list and look for one that is contained in the command as a substring!
         for word in command['words']:
-            wordcut = word[0:-1] #getting the word minus the last letter for conjugations
-            if wordcut in command_name.lower(): #checking if the word is contained in the command (driv in drive)
-                func_name = commands[i]['action'] #getting the action that corresponds to the spoken command
-                if log:
-                    print("found the function: " + func_name + " matching the word: " + word)
-                #return getattr(vc, func_name)
-                return func_name, i
+            if lang_data['lang'] == 'ja': # for japanese
+                if word in command_name:
+                    func_name = commands[i]['action']
+                    if log:
+                        print("found the function: " + func_name + " matching the word: " + word)
+                    #return getattr(vc, func_name)
+                    return func_name, i
+            else: # other languages
+                wordcut = word[0:-1] #getting the word minus the last letter for conjugations
+                if wordcut in command_name.lower(): #checking if the word is contained in the command (driv in drive)
+                    func_name = commands[i]['action'] #getting the action that corresponds to the spoken command
+                    if log:
+                        print("found the function: " + func_name + " matching the word: " + word)
+                    #return getattr(vc, func_name)
+                    return func_name, i
     return None, None
 
 def extract_commands_from_string(in_string):
     '''Separate inString at each "and" or "then", loop through until we find commands, return tuples of cmd_func and cmd_args'''
-    sentences = in_string.split(" " + lang_data['separator'] + " ")
+    if lang_data['lang'] == 'ja': # for japansese
+        sentences = in_string.split(lang_data['separator'])
+    else: # other languages
+        sentences = in_string.split(" " + lang_data['separator'] + " ")
     cmd_funcs = []
     cmd_args = []
     if log:
         print("splitted sentences: ", sentences)
     for sentence in sentences:
-        words = sentence.split()
+        if lang_data['lang'] == 'ja':
+            words = Tokenizer(wakati=True)
+            words = words.tokenize(sentence)
+        else:
+            words = sentence.split()
         for i in range(len(words)):
             cmd_func, cmd_index = get_command(words[i])
             if cmd_func:
