@@ -13,7 +13,7 @@ from cozmo.util import distance_mm, speed_mmps, degrees
 from termcolor import colored, cprint
 
 speed = 80
-words_to_numbers = ['one', 'uno', 'i', 'un']
+words_to_numbers = ['one', 'uno', 'i', 'un', '一']
 
 def extract_float(cmd_args, index=0):
     if len(cmd_args) > index:
@@ -350,7 +350,7 @@ class VoiceCommands():
                 robot.drive_straight(distance_mm(90), speed_mmps(50)).wait_for_completed()
                 trial += 1
                 if trial < 4:
-                    self.en_charger(robot)
+                    self.charger(robot)
                 else:
                     print("tired of trying. Giving up =(")
 
