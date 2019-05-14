@@ -16,15 +16,15 @@ Assuming that you've already performed the [**Cozmo SDK Setup**](http://cozmosdk
 `brew install portaudio`
 
   * on **Linux**:  
-`sudo apt-get install flac portaudio19-dev python-all-dev python3-all-dev && pip3 install --user PyAudio`
+`sudo apt-get install flac portaudio19-dev python-all-dev python3-all-dev libjpeg-dev && pip3 install --user PyAudio`
 
   * on **Windows**:  
 you only need to [install git](https://git-scm.com/download/win) as it is not included by default.  
 
 2. install `cvc` package:  
-`pip3 install --upgrade git+https://github.com/rizal72/Cozmo-Voice-Commands`  
+`pip3 install --upgrade git+https://github.com/taoman26/Cozmo-Voice-Commands`  
   * If you are having permission issues (happens mainly on Linux) try:  
-  `pip3 install --upgrade --user git+https://github.com/rizal72/Cozmo-Voice-Commands`
+  `pip3 install --upgrade --user git+https://github.com/taoman26/Cozmo-Voice-Commands`
 
 **note:** to update **CvC**, repeat step **2**.
 
@@ -64,5 +64,6 @@ If you want to just run the App **without installing the package**, you need to 
 https://github.com/rizal72/Cozmo-Voice-Commands
 
 ### 日本語対応
-raizal72氏のプログラムではスペースで区切られた単語を元にコマンド認識しているが、日本語にはスペースがないため、janomeで形態素解析してコマンドを認識するようにした。
-ウェイクワードは「コズモ」もしくは「ロボット」となります。
+日本語用にjanomeで形態素解析してコマンドを認識するようにしました。
+ウェイクワードは「コズモ」もしくは「ロボット」です。
+音声コマンドの間に「それから」と発声することで、一度に複数コマンドを実行できます。

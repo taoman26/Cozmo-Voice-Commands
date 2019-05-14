@@ -7,6 +7,7 @@ Some commands support one argument, for example: if you say *"drive for 10 secon
 import asyncio
 import time
 from threading import Timer
+from PIL import Image
 
 import cozmo
 from cozmo.util import distance_mm, speed_mmps, degrees
@@ -160,11 +161,13 @@ class VoiceCommands():
         print("taking a picture...")
         message = ""
         pic_filename = "cozmo_pic_" + str(int(time.time())) + ".png"
-        robot.say_text("Say cheese!").wait_for_completed()
+        robot.say_text("Ready? Say cheese!").wait_for_completed()
         latest_image = robot.world.latest_image
         if latest_image:
             latest_image.raw_image.convert('L').save(pic_filename)
             message =  "picture saved as: " + pic_filename
+            img = Image.open(pic_filename)
+            img.show() # preview picture
         else:
             message = "no picture saved"
         robot.camera.image_stream_enabled = False
