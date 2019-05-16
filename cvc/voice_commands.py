@@ -4,10 +4,15 @@ You can add as many new commands as you like:
 just prefix their function names with the language they are spoken in, *i.e. "it_" for italian, "en_" for english, so for instance you'll create the method "en_smile()" and the voice command you'll have to say will be "smile"*.
 Some commands support one argument, for example: if you say *"drive for 10 seconds"*, 10 will be passed to the method *"en_drive"*, any other words will be ignored.
 '''
+import io
+import os
 import asyncio
 import time
 from threading import Timer
 from PIL import Image
+
+from google.cloud import vision, translate
+from google.cloud.vision import types
 
 import cozmo
 from cozmo.util import distance_mm, speed_mmps, degrees
@@ -170,6 +175,37 @@ class VoiceCommands():
             img.show() # preview picture
         else:
             message = "no picture saved"
+        robot.camera.image_stream_enabled = False
+        return message
+
+###### RECOGNITION ######
+###  Recognize what cozmo is seeing by google VISION api.
+###  You should activate google vision api and translate api.
+###  This code works japanese only. 
+
+    def recognition(self, robot:cozmo.robot.Robot = None, cmd_args = None):
+
+        robot.camera.image_stream_enabled = True
+        print("First, taking a picture...")
+        message = ""
+        pic_filename = "cozmo_pic_" + str(int(time.time())) + ".png"
+        robot.say_text("そうだねえ。").wait_for_completed()
+        latest_image = robot.world.latest_image
+        if latest_image:
+            latest_image.raw_image.convert('L').save(pic_filename)
+            client = vision.ImageAnnotatorClient()
+            with io.open(pic_filename, 'rb') as image_file:
+                content = image_file.read()
+            image = vision.types.Image(content=content)
+            response = client.label_detection(image=image)
+            labels = response.label_annotations
+            translate_client = translate.Client()
+            result = translate_client.translate(labels[0].description, target_language='ja')  # translate japanese
+            message = result['translatedText'] + 'が見えるよ。'
+            robot.say_text(message).wait_for_completed()
+        else:
+            message = "何も見えません。"
+            robot.say_text(messages).wait_for_completed()
         robot.camera.image_stream_enabled = False
         return message
 

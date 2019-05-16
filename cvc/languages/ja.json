@@ -20,6 +20,7 @@
         {"action":"look", "words":["見つけ","探し"], "usage":"コズモ、私を見つけて。"},
         {"action":"follow", "words":["見張っ","追跡"], "usage":"コズモ、私を見張って。"},
         {"action":"picture", "words":["写真","画像"], "usage":"コズモ、写真を撮って。（写真はCvCを起動したフォルダに保存されます）"},
+        {"action":"recognition", "words":["見え","認識"], "usage":"コズモ、何が見える？"},
         {"action":"say", "words":["反復","リピート"], "usage":"コズモ、「X」、反復。 ( X を復唱します)"},
         {"action":"blocks", "words":["キューブ","ブロック","遊ん"], "usage":"コズモ、遊んで。"},
         {"action":"dance", "words":["踊っ","ジャンプ"], "usage":"コズモ、踊って。"},
