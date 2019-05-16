@@ -181,7 +181,7 @@ class VoiceCommands():
 ###### RECOGNITION ######
 ###  Recognize what cozmo is seeing by google VISION api.
 ###  You should activate google vision api and translate api.
-###  This code works japanese only. 
+###  This function works japanese only. 
 
     def recognition(self, robot:cozmo.robot.Robot = None, cmd_args = None):
 
