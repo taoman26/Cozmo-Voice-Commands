@@ -186,11 +186,18 @@ class VoiceCommands():
     def recognition(self, robot:cozmo.robot.Robot = None, cmd_args = None):
 
         robot.camera.image_stream_enabled = True
-        print("First, taking a picture...")
         message = ""
         pic_filename = "cozmo_pic_" + str(int(time.time())) + ".png"
-        robot.say_text("そうだねえ。").wait_for_completed()
+        robot.set_lift_height(0.0).wait_for_completed()
+        robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE).wait_for_completed()
+        print("First, taking a picture...")
         latest_image = robot.world.latest_image
+        robot.say_text("そうだねえ。", duration_scalar=1.0, in_parallel=True)
+        robot.camera.image_stream_enabled = False
+        robot.set_head_angle(degrees(0.0), in_parallel=True)
+        time.sleep(1)
+        robot.set_head_angle(cozmo.robot.MAX_HEAD_ANGLE, in_parallel=True)
+        print("Then, recognize what he is seeing...")
         if latest_image:
             latest_image.raw_image.convert('L').save(pic_filename)
             client = vision.ImageAnnotatorClient()
@@ -200,13 +207,14 @@ class VoiceCommands():
             response = client.label_detection(image=image)
             labels = response.label_annotations
             translate_client = translate.Client()
-            result = translate_client.translate(labels[0].description, target_language='ja')  # translate japanese
+            result = translate_client.translate(labels[0].description, target_language='ja')
             message = result['translatedText'] + 'が見えるよ。'
-            robot.say_text(message).wait_for_completed()
+            robot.say_text(message, duration_scalar=0.8, in_parallel=True)
         else:
-            message = "何も見えません。"
-            robot.say_text(messages).wait_for_completed()
-        robot.camera.image_stream_enabled = False
+            message = "何も見えないよ。"
+            robot.say_text(message, duration_scalar=0.8, in_parallel=True)
+        robot.wait_for_all_actions_completed()
+        robot.play_anim("anim_poked_giggle").wait_for_completed
         return message
 
 ###### DRIVE ######
